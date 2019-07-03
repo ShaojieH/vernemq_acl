@@ -14,3 +14,8 @@ services:
           - './auth_http.lua:/auth_http.lua'
       image: erlio/docker-vernemq
       container_name: vernemq_acl_test
+  db:
+    image: redis
+    container_name: auth_redis
+    ports:
+      - "6379:6379"
