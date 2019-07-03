@@ -1,0 +1,16 @@
+version: '3'
+services:
+  broker:
+      ports:
+          - '1883:1883'
+          - '8888:8888'
+      environment:
+          - DOCKER_VERNEMQ_ALLOW_ANONYMOUS=off
+          - DOCKER_VERNEMQ_PLUGINS__VMQ_PASSWD=off
+          - DOCKER_VERNEMQ_PLUGINS__VMQ_ACL=off
+          - DOCKER_VERNEMQ_PLUGINS__VMQ_DIVERSITY=on
+          - DOCKER_VERNEMQ_VMQ_DIVERSITY__HTTP_AUTH__file=/auth_http.lua
+      volumes:
+          - './auth_http.lua:/auth_http.lua'
+      image: erlio/docker-vernemq
+      container_name: vernemq_acl_test
