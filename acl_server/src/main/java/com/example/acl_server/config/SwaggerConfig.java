@@ -1,4 +1,4 @@
-package com.example.acl_server;
+package com.example.acl_server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

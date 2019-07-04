@@ -19,8 +19,10 @@ function auth_on_register(reg)
         headers["Content-Type"] = "application/json"
         ret = http.post(pool, REG_URL, data, headers)
         if ret.status == 200 and ret.ref then
+            --[[ test no cache in vernemq
             body = http.body(ret.ref) 
             json = json.decode(body)
+            
             cache_insert(
                 reg.mountpoint, 
                 reg.client_id, 
@@ -28,6 +30,7 @@ function auth_on_register(reg)
                 json.publish_acl,
                 json.subscribe_acl
                 )
+            ]]--
             return true
         else
             return false
@@ -62,8 +65,36 @@ function auth_on_publish(pub)
 end
 
 
+function formatTopics(l)
+    for _, sub in ipairs(l) do
+        sub.topic = sub[1]
+        sub.qos = sub[2]
+        sub[1]=nil
+        sub[2]=nil
+    end
+    return l
+end
+
 function auth_on_subscribe(sub)
-    return true
+    if sub.username ~= nil then
+        data = json.encode({
+            mountpoint = sub.mountpoint,
+            client_id = sub.client_id, 
+            username = sub.username,
+            topics = formatTopics(sub.topics)
+        })
+        headers = {}
+        headers["x_post_header"] = "X-POST-HEADER"
+        headers['Accept'] = "application/json"
+        headers["Content-Type"] = "application/json"
+        ret = http.post(pool, SUB_URL, data, headers)
+        if ret.status == 200 and ret.ref then
+            return true
+        else
+            return false
+        end
+    end
+    return false
 end
 
 pool = "auth_http"
